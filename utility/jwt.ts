@@ -1,4 +1,4 @@
-import jwt, { Secret, VerifyCallback } from 'jsonwebtoken'
+import jwt, { Secret, VerifyCallback } from 'jsonwebtoken';
 
 export const jwtSign = (token: object) => {
   return jwt.sign(token, process.env.VERIFY_SIGNATURE as Secret, {
@@ -6,19 +6,21 @@ export const jwtSign = (token: object) => {
   });
 };
 
-
 // Function to verify a JWT token
-const verifyToken = (token : string) => {
+export const jwtVerify = async (token: string) => {
   try {
-    const decoded = jwt.verify(token, process.env.VERIFY_SIGNATURE as Secret );
+    const decoded = jwt.verify(token, process.env.VERIFY_SIGNATURE as Secret);
 
-    // // Check if the token is expired
-    // if (decoded.exp < Date.now() / 1000) {
-    //   return { valid: false, message: 'Token has expired' };
-    // }
-
-    // return { valid: true, decoded };
+    return {
+      success: true,
+      data: decoded,
+    };
   } catch (error) {
-    return { valid: false, message: 'Invalid token' };
+    console.log(error);
+
+    return {
+      success: false,
+      message: 'Invalid token',
+    };
   }
 };

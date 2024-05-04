@@ -1,13 +1,52 @@
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 import { comparePassword, hashPassword } from '../../utility/password';
-import { jwtSign } from '../../utility/jwt';
+import { jwtSign, jwtVerify } from '../../utility/jwt';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { queueINIT } from '../../utility/messageSender';
 
 const prisma = new PrismaClient();
 
-const getCurrentUser = (req: Request, res: Response) => {};
+const getCurrentUser = async (req: Request, res: Response) => {
+  const { token: authorization } = req.headers;
+  //@ts-ignore
+  const token = authorization.split(' ')[1];
+
+  try {
+    // cookie identity
+    try {
+      const secret = process.env.VERIFY_SIGNATURE as string;
+      let payload = jwt.verify(String(token), secret) as jwt.JwtPayload;
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: payload.id,
+        },
+      });
+
+      if (!user?.isValid) {
+        return res.status(200).json({
+          userInfo: false,
+          message: '',
+          redirect: false,
+          verify: false,
+        });
+      }
+    } catch (error) {
+      return res.status(201).json({
+        success: false,
+        message: 'Invalid token',
+        tokenInvalid: true,
+        redirect: true,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error creating user',
+    });
+  }
+};
 
 const loginCurrentUser = async (req: Request, res: Response) => {
   const { email, password } = req.body.user;
@@ -157,40 +196,113 @@ const forgetPassword = async (req: Request, res: Response) => {
   }
 };
 
-const resetPasswordCheck = async (req: Request, res: Response) => {
-  const { id, token } = req.headers;
+const resetPassword = async (req: Request, res: Response) => {
   try {
+    const { id, token } = req.headers;
+    const { password } = req.body;
+
+    // user identity
     const user = await prisma.user.findUnique({
       where: {
         id: Number(id),
       },
     });
 
-  
- 
-    if (user === null) {
-      return res.json({});
+    if (!user) {
+      return res.status(201).json({
+        success: false,
+        message: 'User does not exist',
+      });
     }
 
-    const secret = process.env.VERIFY_SIGNATURE + user.password;
-
-    let payload = jwt.verify(String(token), secret);
+    // cookie identity
     try {
+      const secret = process.env.VERIFY_SIGNATURE + user.password;
+
       let payload = jwt.verify(String(token), secret);
-      // Token is valid
-    } catch (error) { 
-      
+      if (!payload) {
+        return res.status(201).json({
+          success: false,
+          message: 'User already  changed password',
+        });
+      }
+    } catch (error) {
+      return res.json({
+        success: false,
+        message: 'Invalid token',
+      });
     }
-    
+
+    // password reset
+    const encodedPassword = await hashPassword(password);
+    await prisma.user.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        password: encodedPassword,
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      message: 'Password changed successfully',
+    });
   } catch (error) {
-    console.log(error);
-    // Handle error appropriately
-    res.json({});
+    res.status(500).json({
+      success: false,
+      message: 'Error creating user',
+    });
   }
 };
 
-const userFillUp = async (req: Request, res: Response) => {
-  // const
+const putUserMoreDetailInfo = async (req: Request, res: Response) => {
+  try {
+    const { companyLogo, companyName, googleLink, facebookLink, formData } =
+      req.body;
+    const { token: authorization, imageLink } = req.headers;
+    //@ts-ignore
+    const token = authorization.split(' ')[1];
+
+    const user = jwtVerify(token);
+    console.log(req.file);
+
+    try {
+      if (!(await user).success) {
+        return res.status(200).json({
+          userInfo: false,
+          message: '',
+          redirect: false,
+          verify: false,
+        });
+      }
+    } catch (error) {
+      return res.status(201).json({
+        success: false,
+        message: 'Invalid token',
+        tokenInvalid: true,
+        redirect: true,
+      });
+    }
+
+    // await prisma.user.updateMany({
+    //   where: {
+    //     id: Number(req.headers.id),
+    //   },
+    //   data: {
+    //     companyLogo,
+    //     companyName,
+    //     googleLink,
+    //     facebookLink,
+    //   },
+    // });
+    res.send('fjkdsfjksdf')
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating user',
+    });
+  }
 };
 
 export default {
@@ -198,6 +310,6 @@ export default {
   createCurrentUser,
   loginCurrentUser,
   forgetPassword,
-  resetPasswordCheck,
-  userFillUp,
+  resetPassword,
+  putUserMoreDetailInfo,
 };
