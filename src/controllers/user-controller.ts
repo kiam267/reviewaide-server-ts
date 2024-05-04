@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
-import { comparePassword, hashPassword } from '../../utility/password';
-import { jwtSign, jwtVerify } from '../../utility/jwt';
+import { comparePassword, hashPassword } from '../utility/password';
+import { jwtSign, jwtVerify } from '../utility/jwt';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
-import { queueINIT } from '../../utility/messageSender';
+import { queueINIT } from '../utility/messageSender';
 
 const prisma = new PrismaClient();
 
