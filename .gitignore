@@ -2,4 +2,6 @@ node_modules
 # Keep environment variables out of version control
 .env
 
+/prisma/migrations
+
 ssh root@195.35.11.4
