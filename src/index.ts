@@ -17,7 +17,7 @@ app.use('/api/my/user', userRouter)
 
 // health check
 
-app.get('/health', async (req: Request, res: Response) => {
+app.get('/api/health', async (req: Request, res: Response) => {
   res.send('health is good ')
 });
 
