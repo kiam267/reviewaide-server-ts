@@ -57,5 +57,5 @@ enum UserRole {
   clientName String @default("unknown")
   uniqueId  Int @default(0)
   rating Int 
-  // method Method @default(private)
+  method Method @default(private)
  }

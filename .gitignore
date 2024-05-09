@@ -4,4 +4,5 @@ node_modules
 
 /prisma/migrations
 /dist
+
 ssh root@195.35.11.4
