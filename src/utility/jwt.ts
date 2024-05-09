@@ -1,6 +1,14 @@
 import jwt, { Secret, VerifyCallback } from 'jsonwebtoken';
 
-export const jwtSign = (token: object) => {
+interface JwtValue {
+  id: string | number | undefined;
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  userStatus?: string;
+}
+
+export const jwtSign = (token: JwtValue) => {
   return jwt.sign(token, process.env.VERIFY_SIGNATURE as Secret, {
     expiresIn: '2h',
   });
@@ -9,15 +17,16 @@ export const jwtSign = (token: object) => {
 // Function to verify a JWT token
 export const jwtVerify = async (token: string) => {
   try {
-    const decoded = jwt.verify(token, process.env.VERIFY_SIGNATURE as Secret);
+    const decoded = jwt.verify(
+      token,
+      process.env.VERIFY_SIGNATURE as Secret
+    ) as JwtValue;
 
     return {
       success: true,
       data: decoded,
     };
   } catch (error) {
-    console.log(error);
-
     return {
       success: false,
       message: 'Invalid token',

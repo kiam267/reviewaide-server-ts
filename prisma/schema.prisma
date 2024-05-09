@@ -43,3 +43,19 @@ enum UserRole {
   role  UserRole @default(user)
   userStatus UserStatus @default(pending)
  }
+ enum Method {
+  facebook
+  google
+  private
+}
+
+ model Client {
+  id Int @unique @default(autoincrement())
+  email String
+  createdAt DateTime @default(now())
+  private String @db.LongText() @default("")
+  clientName String @default("unknown")
+  uniqueId  Int @default(0)
+  rating Int 
+  method Method @default(private)
+ }
