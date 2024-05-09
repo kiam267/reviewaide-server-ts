@@ -53,7 +53,7 @@ enum UserRole {
   id Int @unique @default(autoincrement())
   email String
   createdAt DateTime @default(now())
-  private String @db.LongText() @default("")
+  private String  @default("")
   clientName String @default("unknown")
   uniqueId  Int @default(0)
   rating Int 
