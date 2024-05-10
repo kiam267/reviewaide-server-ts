@@ -5,6 +5,7 @@ const router = express.Router();
 router.post('/', adminController.loginCurrentAdmin);
 router.get('/', adminController.getCurrentAdmin);
 router.delete('/', adminController.deleteClientLink);
+router.put('/', adminController.updateUserViaAdmin);
 router.post('/sign-up', adminController.createCurrentAdmin);
 
-export default router;  
+export default router;

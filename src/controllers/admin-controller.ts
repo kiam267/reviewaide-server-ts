@@ -270,13 +270,16 @@ const deleteClientLink = async (req: Request, res: Response) => {
           email: req.body.email,
         },
       });
+      await prisma.client.deleteMany({
+        where: {
+          email: req.body.email,
+        },
+      });
       return res.status(200).json({
         message: 'User delete successfully',
         success: true,
       });
     } catch (error) {
-      console.log(error);
-      
       return res.status(201).json({
         success: false,
         message: 'Invalid token',
@@ -291,14 +294,88 @@ const deleteClientLink = async (req: Request, res: Response) => {
   }
 };
 
+const updateUserViaAdmin = async (req: Request, res: Response) => {
+
+  try {
+    const {
+      companyName,
+      googleLink,
+      facebookLink,
+      fullName,
+      phone,
+      email,
+      userStatus,
+      createdAt,
+    } = req.body;
+    const { token: authorization } = req.headers;
+    //@ts-ignore
+    const token = authorization.split(' ')[1];
+
+    const admin = await jwtVerify(token);
+    if (!admin.success && admin.data?.role === 'admin') {
+      return res.status(200).json({
+        success: false,
+        message: 'Invalid token',
+      });
+    }
+    const Update: any = {};
+    if (companyName) {
+      Update.companyName = companyName;
+    }
+    if (googleLink) {
+      Update.googleLink = googleLink;
+    }
+    if (facebookLink) {
+      Update.facebookLink = facebookLink;
+    }
+    if (fullName) {
+      Update.fullName = fullName;
+    }
+    if (phone) {
+      Update.phone = phone;
+    }
+    if (email) {
+      Update.email = email;
+    }
+    if (userStatus === 'active' || 'pending' || 'deactived') {
+      Update.userStatus = userStatus;
+    }
+    const datePattern = /^\d$/;
+    if (datePattern.test(createdAt)) {
+      Update.createdAt = createdAt;
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (!user) {
+      return res.status(200).json({
+        message: 'User not found',
+        success: false,
+      });
+    }
+    await prisma.user.updateMany({
+      where: {
+        email: email,
+      },
+      data: Update,
+    });
+
+    return res.status(200).json({
+      message: 'User update successfully',
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default {
   getCurrentAdmin,
   createCurrentAdmin,
   loginCurrentAdmin,
   deleteClientLink,
-  // forgetPassword,
-  // resetPassword,
-  // putUserMoreDetailInfo,
-  // getHeader,
-  // getProfile,
+  updateUserViaAdmin,
 };

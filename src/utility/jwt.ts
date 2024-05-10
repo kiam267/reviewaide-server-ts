@@ -29,6 +29,7 @@ export const jwtVerify = async (token: string) => {
     };
   } catch (error) {
     return {
+      tokenInvalid: true,
       success: false,
       message: 'Invalid token',
     };
