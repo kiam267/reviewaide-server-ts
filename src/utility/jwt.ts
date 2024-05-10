@@ -1,11 +1,12 @@
 import jwt, { Secret, VerifyCallback } from 'jsonwebtoken';
 
 interface JwtValue {
-  id: string | number | undefined;
+  id?: string | number | undefined;
   fullName?: string;
   email?: string;
   phone?: string;
   userStatus?: string;
+  role?: string;
 }
 
 export const jwtSign = (token: JwtValue) => {

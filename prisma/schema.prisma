@@ -16,6 +16,7 @@ datasource db {
 enum UserRole {
   user
   admin
+  moderator
 }
  enum UserStatus {
   pending
@@ -24,6 +25,14 @@ enum UserRole {
 
 }
 
+model Admin {
+  id Int @id @default(autoincrement())
+  fullName String 
+  email String @unique
+  password String
+  role UserRole @default(user)
+  userStatus UserStatus @default(pending)
+}
 
  model User {
   id Int @id @unique @default(autoincrement())
@@ -59,3 +68,6 @@ enum UserRole {
   rating Int 
   method Method @default(private)
  }
+
+
+

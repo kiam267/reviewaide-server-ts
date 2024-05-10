@@ -3,6 +3,7 @@ import cros from 'cors';
 
 import userRouter from './routers/user-router';
 import clientRouter from './routers/client-router';
+import adminRouter from './routers/admin-router';
 
 // set some confing
 const PORT = process.env.PORT || 4500;
@@ -16,6 +17,7 @@ app.use('/api/uploads', express.static('src/uploads'));
 
 app.use('/api/my/user', userRouter);
 app.use('/api/my/client', clientRouter);
+app.use('/api/my/admin', adminRouter);
 
 // health check
 
