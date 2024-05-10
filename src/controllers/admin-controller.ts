@@ -237,15 +237,15 @@ const createCurrentAdmin = async (req: Request, res: Response) => {
     });
   }
 };
-function watchDirectory(directoryPath: string) {
-  fs.watch(directoryPath, { recursive: true }, (eventType, filename) => {
-    if (eventType === 'rename') {
-      if (!fs.existsSync(`${directoryPath}/${filename}`)) {
-        console.log(`File deleted: ${filename}`);
-      }
-    }
-  });
-}
+// function watchDirectory(directoryPath: string) {
+//   fs.watch(directoryPath, { recursive: true }, (eventType, filename) => {
+//     if (eventType === 'rename') {
+//       if (!fs.existsSync(`${directoryPath}/${filename}`)) {
+//         console.log(`File deleted: ${filename}`);
+//       }
+//     }
+//   });
+// }
 const deleteClientLink = async (req: Request, res: Response) => {
   const { token: authorization } = req.headers;
   //@ts-ignore
@@ -264,7 +264,7 @@ const deleteClientLink = async (req: Request, res: Response) => {
     }
     try {
       jwt.verify(String(token), secret) as jwt.JwtPayload;
-      await watchDirectory(`src/uploads/${user.companyLogo}`);
+      // await watchDirectory(`src/uploads/${user.companyLogo}`);
       await prisma.user.delete({
         where: {
           email: req.body.email,
