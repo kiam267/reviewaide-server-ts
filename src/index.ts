@@ -4,10 +4,21 @@ import cros from 'cors';
 import userRouter from './routers/user-router';
 import clientRouter from './routers/client-router';
 import adminRouter from './routers/admin-router';
-
+import { v2 as cloudinary } from 'cloudinary';
 // set some confing
 const PORT = process.env.PORT || 4500;
 const app = express();
+
+
+
+
+// cloudinary configuration
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // use
 app.use(cros());

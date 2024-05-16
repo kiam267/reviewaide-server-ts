@@ -5,7 +5,6 @@ import { jwtSign, jwtVerify } from '../utility/jwt';
 import jwt from 'jsonwebtoken';
 import { queueINIT } from '../utility/messageSender';
 
-
 const prisma = new PrismaClient();
 
 const getCurrentUser = async (req: Request, res: Response) => {
@@ -75,7 +74,6 @@ const loginCurrentUser = async (req: Request, res: Response) => {
       });
     }
 
-    
     const jwtToken: string = jwtSign({
       id: user?.id,
       fullName: user?.fullName,
@@ -319,14 +317,12 @@ const putUserMoreDetailInfo = async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
-
     res.status(500).json({
       success: false,
       message: 'Error creating user',
     });
   }
 };
-
 
 const getHeader = async (req: Request, res: Response) => {
   const { token: authorization } = req.headers;
@@ -345,8 +341,7 @@ const getHeader = async (req: Request, res: Response) => {
         },
       });
       const data = {
-        companyName: user?.companyName,
-        companyLogo: user?.companyLogo,
+        userName: user?.fullName,
       };
       return res.status(200).json({
         data: data,

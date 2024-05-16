@@ -58,6 +58,17 @@ model Admin {
   private
 }
 
+model QrCodeGen {
+  id Int @unique @default(autoincrement())
+  companyLogo String 
+  companyName String
+  googleLink String @default("")
+  facebookLink String @default("")
+  userEmail String 
+  uniqueId  String  @default("0")
+  createdAt DateTime @default(now())
+}
+
  model Client {
   id Int @unique @default(autoincrement())
   email String
@@ -65,6 +76,7 @@ model Admin {
   private String  @default("")
   clientName String @default("unknown")
   uniqueId  Int @default(0)
+  companyName String  @default("unknown")
   rating Int 
   method Method @default(private)
  }
