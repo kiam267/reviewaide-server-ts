@@ -31,7 +31,7 @@ const getClient = async (req: Request, res: Response) => {
 
       let total: any;
       total = await prisma.client.count({
-        where
+        where,
       });
 
       if (total === 0) {
@@ -59,7 +59,7 @@ const getClient = async (req: Request, res: Response) => {
       // if (searchClientName) {
       //   where.clientName = searchClientName;
       // }
-   
+
       const pageSize = 10;
       const skip = (page - 1) * pageSize;
       const client = await prisma.client.findMany({
@@ -144,14 +144,21 @@ const createClientLink = async (req: Request, res: Response) => {
   try {
     if (req.user?.email && req.file) {
       const imageUrl = await uploadImage(req.file as Express.Multer.File);
+      let data: any = {};
+
+      if (req.body.googleLink) {
+        data.googleLink = req.body.googleLink;
+      }
+      if (req.body.facebookLink) {
+        data.facebookLink = req.body.facebookLink;
+      }
       await prisma.qrCodeGen.create({
         data: {
           userEmail: req.user.email,
           companyLogo: imageUrl,
           companyName: req.body.companyName,
-          googleLink: req.body.googleLink,
-          facebookLink: req.body.facebookLink,
           uniqueId: uniqid(),
+          ...data,
         },
       });
 
@@ -165,6 +172,8 @@ const createClientLink = async (req: Request, res: Response) => {
       message: 'Error creating user',
     });
   } catch (error) {
+    console.log(error);
+
     return res.status(500).json({
       success: false,
       message: 'Error creating user',
