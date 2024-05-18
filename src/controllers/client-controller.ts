@@ -173,7 +173,6 @@ const createClientLink = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-
     return res.status(500).json({
       success: false,
       message: 'Error creating user',
@@ -191,6 +190,7 @@ const getClientLink = async (req: Request, res: Response) => {
         select: {
           uniqueId: true,
           companyName: true,
+          companyLogo: true,
         },
       });
 
